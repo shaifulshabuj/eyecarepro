@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>EyeCare Pro - Eye Health Companion</title>
+    <link rel="manifest" href="/manifest.json">
     
     <style>
         * {
@@ -1363,6 +1364,16 @@
                 console.log('Running as installed PWA');
             }
         });
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => {
+                    swRegistration = reg;
+                    console.log('Service Worker registered');
+                })
+                .catch(err => {
+                    console.log('Service Worker registration failed:', err);
+                });
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="Eye Care PWA - Your digital eye health companion">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>EyeCare Pro - Eye Health Companion</title>
+    <link rel="manifest" href="/manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-top: 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #7f8c8d;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .exercise-item {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .exercise-item:hover {
+            transform: translateX(5px);
+            background: #d5dbdd;
+        }
+
+        .exercise-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .exercise-desc {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .vision-test-area {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .test-letter {
+            font-size: 60px;
+            font-weight: bold;
+            color: var(--dark);
+            letter-spacing: 10px;
+        }
+
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .reminder-info {
+            flex: 1;
+        }
+
+        .reminder-time {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .reminder-text {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: var(--light);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .install-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .install-banner.show {
+            display: block;
+        }
+
+        .install-btn {
+            background: white;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .nav-tab {
+                font-size: 12px;
+                padding: 10px 5px;
+            }
+        }
+
+        /* PWA-specific styles */
+        @media (display-mode: standalone) {
+            .header {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+            }
+            
+            .header h1, .header .subtitle {
+                color: white;
+            }
+            
+            .status-indicator {
+                background: rgba(255,255,255,0.2);
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👁️ EyeCare Pro</h1>
+            <p class="subtitle">Your Digital Eye Health Companion</p>
+            <span class="status-indicator" id="appStatus">Online</span>
+        </div>
+
+        <div id="installBanner" class="install-banner">
+            <p>📱 Install EyeCare Pro for the best experience!</p>
+            <button class="install-btn" onclick="promptInstall()">Install App</button>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('exercises', event)">Exercises</button>
+            <button class="nav-tab" onclick="switchTab('tests', event)">Tests</button>
+            <button class="nav-tab" onclick="switchTab('reminders', event)">Reminders</button>
+            <button class="nav-tab" onclick="switchTab('tips', event)">Tips</button>
+        </div>
+
+        <!-- Exercises Section -->
+        <div id="exercises" class="content-section active">
+            <div class="card">
+                <h2 class="card-title">Eye Exercises</h2>
+                
+                <div class="exercise-item" onclick="startExercise('20-20-20')">
+                    <div class="exercise-title">20-20-20 Rule</div>
+                    <div class="exercise-desc">Every 20 minutes, look at something 20 feet away for 20 seconds</div>
+                </div>
+
+                <div class="exercise-item" onclick="startExercise('palming')">
+                    <div class="exercise-title">Palming</div>
+                    <div class="exercise-desc">Relax your eyes with gentle palm coverage</div>
+                </div>
+
+                <div class="exercise-item" onclick="startExercise('blinking')">
+                    <div class="exercise-title">Blinking Exercise</div>
+                    <div class="exercise-desc">Conscious blinking to moisturize eyes</div>
+                </div>
+
+                <div class="exercise-item" onclick="startExercise('focus-shift')">
+                    <div class="exercise-title">Focus Shifting</div>
+                    <div class="exercise-desc">Alternate focus between near and far objects</div>
+                </div>
+
+                <div class="exercise-item" onclick="startExercise('eye-rolling')">
+                    <div class="exercise-title">Eye Rolling</div>
+                    <div class="exercise-desc">Circular eye movements for flexibility</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tests Section -->
+        <div id="tests" class="content-section">
+            <div class="card">
+                <h2 class="card-title">Vision Tests</h2>
+                
+                <button class="btn btn-primary" onclick="startVisionTest('snellen')">
+                    Snellen Chart Test
+                </button>
+                
+                <button class="btn btn-primary" onclick="startVisionTest('color')">
+                    Color Blindness Test
+                </button>
+                
+                <button class="btn btn-primary" onclick="startVisionTest('astigmatism')">
+                    Astigmatism Test
+                </button>
+
+                <div id="test-area" class="vision-test-area" style="display: none;">
+                    <div id="test-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reminders Section -->
+        <div id="reminders" class="content-section">
+            <div class="card">
+                <h2 class="card-title">Eye Care Reminders</h2>
+                
+                <button class="btn btn-success" onclick="showReminderModal()">
+                    + Add New Reminder
+                </button>
+
+                <div id="reminders-list">
+                    <p style="text-align: center; color: #7f8c8d;">No reminders set</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div id="tips" class="content-section">
+            <div class="card">
+                <h2 class="card-title">Eye Health Tips</h2>
+                
+                <ul class="tips-list">
+                    <li>💧 Keep your eyes hydrated by blinking regularly</li>
+                    <li>🖥️ Maintain 20-24 inches distance from screens</li>
+                    <li>💡 Ensure proper lighting to avoid eye strain</li>
+                    <li>🥗 Eat foods rich in Vitamin A and Omega-3</li>
+                    <li>😴 Get 7-8 hours of quality sleep</li>
+                    <li>🕶️ Wear UV-protective sunglasses outdoors</li>
+                    <li>💻 Adjust screen brightness to match surroundings</li>
+                    <li>🚭 Avoid smoking - it damages eye blood vessels</li>
+                    <li>💊 Consider omega-3 supplements for dry eyes</li>
+                    <li>👩‍⚕️ Get regular eye check-ups annually</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Modal -->
+    <div id="exerciseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeExerciseModal()">×</span>
+            <h2 id="exercise-title"></h2>
+            <div id="exercise-instructions"></div>
+            <div id="timer" class="timer-display">00:00</div>
+            <button id="exercise-btn" class="btn btn-primary" onclick="toggleExercise()">Start</button>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeReminderModal()">×</span>
+            <h2>Add Reminder</h2>
+            <div class="form-group">
+                <label>Reminder Type</label>
+                <input type="text" id="reminder-type" placeholder="e.g., Eye drops, Break, Exercise">
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" id="reminder-time">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="reminder-repeat"> Repeat Daily
+                </label>
+            </div>
+            <button class="btn btn-success" onclick="addReminder()">Add Reminder</button>
+        </div>
+    </div>
+
+    <script>
+        // PWA Variables
+        let deferredPrompt;
+        let currentExercise = null;
+        let exerciseTimer = null;
+        let exerciseSeconds = 0;
+        let reminders = [];
+        let swRegistration = null;
+
+        // Exercise Data
+        const exercises = {
+            '20-20-20': {
+                title: '20-20-20 Rule Exercise',
+                instructions: 'Look at an object 20 feet away for 20 seconds. This helps reduce eye strain from prolonged screen time.',
+                duration: 20
+            },
+            'palming': {
+                title: 'Palming Exercise',
+                instructions: 'Rub your palms together to warm them, then gently cup them over your closed eyes. Relax for 30 seconds.',
+                duration: 30
+            },
+            'blinking': {
+                title: 'Blinking Exercise',
+                instructions: 'Blink slowly and deliberately 20 times. This helps moisturize your eyes naturally.',
+                duration: 20
+            },
+            'focus-shift': {
+                title: 'Focus Shifting Exercise',
+                instructions: 'Hold your thumb 10 inches away. Focus on it for 5 seconds, then shift focus to something 20 feet away for 5 seconds. Repeat 5 times.',
+                duration: 50
+            },
+            'eye-rolling': {
+                title: 'Eye Rolling Exercise',
+                instructions: 'Look up and slowly roll your eyes in a clockwise circle 5 times, then counter-clockwise 5 times.',
+                duration: 30
+            }
+        };
+
+        // Tab Switching
+        function switchTab(tab, event) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+
+        // Exercise Functions
+        function startExercise(type) {
+            currentExercise = exercises[type];
+            document.getElementById('exercise-title').textContent = currentExercise.title;
+            document.getElementById('exercise-instructions').textContent = currentExercise.instructions;
+            document.getElementById('timer').textContent = formatTime(currentExercise.duration);
+            document.getElementById('exercise-btn').textContent = 'Start';
+            document.getElementById('exerciseModal').classList.add('active');
+            exerciseSeconds = currentExercise.duration;
+        }
+
+        function toggleExercise() {
+            const btn = document.getElementById('exercise-btn');
+            
+            if (btn.textContent === 'Start') {
+                btn.textContent = 'Stop';
+                startTimer();
+            } else {
+                btn.textContent = 'Start';
+                stopTimer();
+            }
+        }
+
+        function startTimer() {
+            exerciseTimer = setInterval(() => {
+                exerciseSeconds--;
+                document.getElementById('timer').textContent = formatTime(exerciseSeconds);
+                
+                if (exerciseSeconds <= 0) {
+                    stopTimer();
+                    completeExercise();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (exerciseTimer) {
+                clearInterval(exerciseTimer);
+                exerciseTimer = null;
+            }
+        }
+
+        function completeExercise() {
+            document.getElementById('exercise-btn').textContent = 'Complete!';
+            
+            // Store exercise completion
+            const completions = JSON.parse(localStorage.getItem('exercise-completions') || '[]');
+            completions.push({
+                exercise: currentExercise.title,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('exercise-completions', JSON.stringify(completions));
+            
+            setTimeout(() => {
+                closeExerciseModal();
+            }, 2000);
+            
+            // Try to send notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('Exercise Complete! 🎉', {
+                        body: 'Great job taking care of your eyes!',
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="70" font-size="60">👁️</text></svg>'
+                    });
+                } catch (e) {
+                    console.log('Notification failed:', e);
+                }
+            }
+        }
+
+        function closeExerciseModal() {
+            stopTimer();
+            document.getElementById('exerciseModal').classList.remove('active');
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Vision Test Functions
+        function startVisionTest(type) {
+            const testArea = document.getElementById('test-area');
+            const testContent = document.getElementById('test-content');
+            
+            testArea.style.display = 'block';
+            
+            switch(type) {
+                case 'snellen':
+                    testContent.innerHTML = `
+                        <div class="test-letter">E</div>
+                        <p style="margin-top: 20px;">Cover one eye and identify the direction of the E</p>
+                        <button class="btn btn-primary" onclick="nextSnellenLetter()">Next Letter</button>
+                    `;
+                    break;
+                    
+                case 'color':
+                    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    testContent.innerHTML = `
+                        <div style="width: 200px; height: 200px; background: ${randomColor}; margin: 0 auto; border-radius: 50%;"></div>
+                        <p style="margin-top: 20px;">What color do you see?</p>
+                        <button class="btn btn-primary" onclick="alert('This is a basic screening. For accurate results, consult an eye care professional.')">Check</button>
+                    `;
+                    break;
+                    
+                case 'astigmatism':
+                    testContent.innerHTML = `
+                        <svg width="200" height="200" style="margin: 20px auto; display: block;">
+                            <g transform="translate(100,100)">
+                                ${Array.from({length: 12}, (_, i) => {
+                                    const angle = i * 30;
+                                    return `<line x1="0" y1="0" x2="80" y2="0" stroke="black" stroke-width="2" transform="rotate(${angle})"/>`;
+                                }).join('')}
+                            </g>
+                        </svg>
+                        <p>Do all lines appear equally dark and clear?</p>
+                        <button class="btn btn-primary" onclick="alert('If lines appear different, consult an eye care professional.')">Done</button>
+                    `;
+                    break;
+            }
+        }
+
+        function nextSnellenLetter() {
+            const letters = ['E', 'F', 'P', 'T', 'O', 'Z'];
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            document.querySelector('.test-letter').textContent = randomLetter;
+        }
+
+        // Reminder Functions
+        function showReminderModal() {
+            document.getElementById('reminderModal').classList.add('active');
+        }
+
+        function closeReminderModal() {
+            document.getElementById('reminderModal').classList.remove('active');
+        }
+
+        function addReminder() {
+            const type = document.getElementById('reminder-type').value;
+            const time = document.getElementById('reminder-time').value;
+            const repeat = document.getElementById('reminder-repeat').checked;
+            
+            if (!type || !time) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const reminder = {
+                id: Date.now(),
+                type,
+                time,
+                repeat
+            };
+            
+            reminders.push(reminder);
+            saveReminders();
+            displayReminders();
+            closeReminderModal();
+            
+            // Clear form
+            document.getElementById('reminder-type').value = '';
+            document.getElementById('reminder-time').value = '';
+            document.getElementById('reminder-repeat').checked = false;
+            
+            // Schedule notification
+            scheduleNotification(reminder);
+        }
+
+        function displayReminders() {
+            const list = document.getElementById('reminders-list');
+            
+            if (reminders.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No reminders set</p>';
+                return;
+            }
+            
+            list.innerHTML = reminders.map(r => `
+                <div class="reminder-item">
+                    <div class="reminder-info">
+                        <div class="reminder-time">${r.time} ${r.repeat ? '(Daily)' : ''}</div>
+                        <div class="reminder-text">${r.type}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteReminder(${r.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            saveReminders();
+            displayReminders();
+        }
+
+        function saveReminders() {
+            localStorage.setItem('eyecare-reminders', JSON.stringify(reminders));
+        }
+
+        function loadReminders() {
+            const saved = localStorage.getItem('eyecare-reminders');
+            if (saved) {
+                reminders = JSON.parse(saved);
+                displayReminders();
+                // Reschedule all reminders
+                reminders.forEach(r => scheduleNotification(r));
+            }
+        }
+
+        function scheduleNotification(reminder) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const [hours, minutes] = reminder.time.split(':');
+                const now = new Date();
+                const scheduledTime = new Date();
+                scheduledTime.setHours(parseInt(hours));
+                scheduledTime.setMinutes(parseInt(minutes));
+                scheduledTime.setSeconds(0);
+                
+                if (scheduledTime <= now) {
+                    // If time has passed today, schedule for tomorrow
+                    scheduledTime.setDate(scheduledTime.getDate() + 1);
+                }
+                
+                const timeout = scheduledTime - now;
+                
+                setTimeout(() => {
+                    try {
+                        new Notification('Eye Care Reminder', {
+                            body: reminder.type,
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="70" font-size="60">👁️</text></svg>'
+                        });
+                    } catch (e) {
+                        console.log('Notification failed:', e);
+                    }
+                    
+                    if (reminder.repeat) {
+                        // Reschedule for next day
+                        scheduleNotification(reminder);
+                    }
+                }, timeout);
+            }
+        }
+
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').classList.add('show');
+        });
+
+        function promptInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA installed');
+                        document.getElementById('installBanner').classList.remove('show');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Check if app is installed
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').classList.remove('show');
+        });
+
+        // Update online/offline status
+        function updateOnlineStatus() {
+            const status = document.getElementById('appStatus');
+            if (navigator.onLine) {
+                status.textContent = 'Online';
+                status.style.background = '#e8f5e9';
+                status.style.color = '#2e7d32';
+            } else {
+                status.textContent = 'Offline';
+                status.style.background = '#ffebee';
+                status.style.color = '#c62828';
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Request Notification Permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            setTimeout(() => {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('Notifications enabled');
+                    }
+                });
+            }, 3000); // Ask after 3 seconds
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReminders();
+            updateOnlineStatus();
+            
+            // Check if running as installed PWA
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running as installed PWA');
+            }
+        });
+
+        // For deployment: Service Worker Registration
+        // Uncomment this when deploying to a real server with an actual sw.js file
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => {
+                    swRegistration = reg;
+                    console.log('Service Worker registered');
+                })
+                .catch(err => {
+                    console.log('Service Worker registration failed:', err);
+                });
+        }
+    </script>
+</body>
+</html>
